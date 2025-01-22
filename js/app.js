@@ -2,6 +2,8 @@ const app = {
   cachePages: new Map(),
   contentElment: document.getElementById("container"),
   defaultPage: "home",
+  editMode: false, // Indique si on est en mode modification
+  currentUserId: null, // Stocke l'ID de l'utilisateur à modifier
 };
 
 app.init = async function () {
@@ -14,8 +16,6 @@ app.init = async function () {
     const url = new URL(e.newURL);
     const hash = url.hash.replace("#", "");
     if (hash) {
-      console.log(document.querySelector(`[src="/js/${hash}.js"]`));
-      console.log(hash);
       await app.loadPage(hash);
       await app.activePage(hash);
     }
@@ -65,8 +65,8 @@ function executeScript(scriptContent, page) {
   scriptElement.setAttribute("data-script", page);
   document.body.appendChild(scriptElement);
 
-  if (typeof loadListeners === "function") {
-    loadListeners();
+  if (typeof initModule === "function") {
+    initModule();
   }
 }
 
