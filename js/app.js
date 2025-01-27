@@ -4,6 +4,7 @@ const app = {
   defaultPage: "home",
   editMode: false, // Indique si on est en mode modification
   currentUserId: null, // Stocke l'ID de l'utilisateur à modifier
+  selectedUsers: [],
 };
 
 app.init = async function () {

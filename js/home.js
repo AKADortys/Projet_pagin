@@ -5,6 +5,19 @@ async function initModule() {
   const lastname = document.getElementById("prenom");
   const btn = document.getElementById("btnadd");
 
+  document
+    .getElementById("selectUsers-Del")
+    .addEventListener("click", async () => {
+      console.log("selectUsers", app.selectedUsers);
+      app.selectedUsers.forEach(
+        async (element) => await db.deleteUser(parseInt(element))
+      );
+      alert("Utilisateurs supprimés avec succès!");
+      app.selectedUsers = [];
+      document.getElementById("selectUsers-Del").style.display = "none";
+      displayusers();
+    });
+
   btn.addEventListener("click", async () => {
     if (name.value === "" || lastname.value === "") {
       alert("Veuillez renseigner tous les champs");
@@ -50,20 +63,32 @@ async function displayusers() {
   const users = await db.getUsers();
 
   let innerHTML =
-    "<table class='table'><th>Identifiant</th><th>Nom</th><th>Prénom</th><th>Actions</th>";
+    "<table class='table table-light'><th>id</th><th>Name</th><th>Lastname</th><th>Actions</th>";
   users.forEach((user) => {
     innerHTML += `<tr>
       <td>${user.id}</td>
       <td>${user.firstname}</td>
       <td>${user.lastname}</td>
       <td>
-        <button onclick='editUser(${user.id})'>Modifier</button>
-        <button onclick='deleteUser(${user.id})'>Supprimer</button>
+        <button class="btn btn-success" onclick='editUser(${user.id})'>Modifier</button>
+        <button class="btn btn-danger" onclick='deleteUser(${user.id})'>Supprimer</button>
+        <input type="checkbox" class="selectedUser" data-selected="${user.id}">
       </td>
       </tr>`;
   });
-
   userscontainer.innerHTML = innerHTML + "</table>";
+  document.querySelectorAll(".selectedUser").forEach((element) => {
+    element.addEventListener("click", () => {
+      const id = element.getAttribute("data-selected");
+      element.checked
+        ? app.selectedUsers.push(id)
+        : app.selectedUsers.splice(app.selectedUsers.indexOf(id), 1);
+
+      app.selectedUsers.length > 0
+        ? (document.getElementById("selectUsers-Del").style.display = "block")
+        : (document.getElementById("selectUsers-Del").style.display = "none");
+    });
+  });
 }
 
 async function editUser(userId) {
